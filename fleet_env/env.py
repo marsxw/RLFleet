@@ -87,6 +87,13 @@ class FleetEnv:
         D = np.zeros((state_dim, action_dim))
         return A, B, C, D
 
+    def _scale_reward(self, reward, min_value, max_value):
+        '''
+            归一化reward
+        '''
+        reward = np.clip(reward, min_value, max_value)
+        return (reward - min_value) / (max_value - min_value)
+
     def _getInterp(self, t, time_points, values):
         '''
             获取时间序列和值的插值
@@ -112,20 +119,15 @@ class FleetEnv:
 
     def _done(self):
         positions, velocities, interval, v_delta = self._get_positions_velocities_interval_v_delta()
-        self.done = (
-            (interval > self.distance_max_threshold).any() or
-            (interval < self.distance_min_threshold).any() or
-            (v_delta > self.velocity_threshold).any() or
-            (velocities < 0).any()
-        )
-        return self.done
+        done_distance_max = (interval > self.distance_max_threshold).any()
+        done_distance_min = (interval < self.distance_min_threshold).any()
+        done_velocity_delta = (v_delta > self.velocity_threshold).any()
+        done_velocity = (velocities < 0).any()
+        self.done = bool(done_distance_max or done_distance_min or done_velocity_delta or done_velocity)
 
-    def _scale_reward(self, reward, min_value, max_value):
-        '''
-            归一化reward
-        '''
-        reward = np.clip(reward, min_value, max_value)
-        return (reward - min_value) / (max_value - min_value)
+        # if self.done:
+        #     print(done_distance_max, done_distance_min, done_velocity_delta, done_velocity, self.step_num)
+        return self.done
 
     def _reward(self):
         positions, velocities, interval, v_delta = self._get_positions_velocities_interval_v_delta()
@@ -198,7 +200,7 @@ class FleetEnv:
 
         return self._get_observation(), self._reward(), self._done(), {'step': self.step_num}
 
-    def render(self, refresh_interval=100):
+    def render(self, refresh_interval=10):
         """
         动态渲染车队状态，显示每辆车的位置、编号、速度和与前车的距离。
         refresh_interval: 动画刷新时间间隔，单位毫秒
@@ -213,11 +215,16 @@ class FleetEnv:
 
             self.scatters = self.ax.scatter(positions, [0] * len(positions), s=100, c=self.colors[:len(positions)])
             self.texts = [self.ax.text(positions[i], 0.1, "", fontsize=10, ha='center') for i in range(len(positions))]
+            self.step_text = self.ax.text(0.05, 0.05, '', transform=self.ax.transAxes)
 
             self.ani = FuncAnimation(self.fig, self.update, frames=range(100), interval=refresh_interval, blit=False)
             plt.show(block=False)  # 非阻塞模式显示图像
             self.animation_started = True  # 标志动画已启动
-        plt.pause(0.0001)  # 短暂暂停以更新图像
+        if self.step_num % 100 == 0:
+            plt.pause(0.001)  # 短暂暂停以更新图像
+        if self.done:
+            for i in range(10):
+                plt.pause(0.001)  # 更新最后图像
 
     def update(self, frame):
         # 获取更新后的状态
@@ -238,4 +245,7 @@ class FleetEnv:
                 self.texts[i].set_position((positions[i], 0.1))
                 self.texts[i].set_text(f"Car {i+1}\nVel: {velocities[i]:.2f}\nDist: {distances[i-1]:.2f}\nAction: {self.action[i-1]:.2f}")
 
-        return self.scatters, self.texts
+        # 更新 step 数量
+        self.step_text.set_text(f'Step: {self.step_num}')  # 更新左下角显示的 step 数量
+
+        return self.scatters, self.texts, self.step_text

@@ -1,6 +1,7 @@
 # %%
+import copy
 import scipy
-from fleet_env import fleet_env
+from fleet_env.env import FleetEnv
 from utils.tool import test_agent
 from utils.logx import EpochLogger, setup_logger_kwargs
 import argparse
@@ -23,34 +24,25 @@ parser.add_argument('--tau', type=float, default=0.005)
 parser.add_argument('--target_update_interval', type=int, default=1)
 parser.add_argument('--replay_size', type=int, default=1000000)
 parser.add_argument('--hidden_size', type=int, default=256)
-parser.add_argument('--batch_size', type=int, default=1024)
+parser.add_argument('--batch_size', type=int, default=2048)
 parser.add_argument('--start_steps', type=int, default=1000)
-parser.add_argument('--save_epoch', type=int, default=50)
+parser.add_argument('--save_epoch', type=int, default=10)
 parser.add_argument('--steps_per_epoch', type=int, default=10000)
 parser.add_argument('--num_steps', type=int, default=1000000)
 # args = parser.parse_args(args=[])  # for jupyter
 args = parser.parse_args()
 
 leader_speed = scipy.io.loadmat('../../predict_meter.mat')['id_v_mat']
-env = fleet_env.FleetEnv(sim_time_len=100,
-                         sim_time_step=0.01,
-                         leader_speed=leader_speed,
-                         follower_num=3,
-                         deceleration=0.001,
-                         distance_max_threshold=80,
-                         distance_min_threshold=1,
-                         velocity_threshold=20,
-                         init_distance=40)
-
-env_test = fleet_env.FleetEnv(sim_time_len=100,
-                              sim_time_step=0.01,
-                              leader_speed=leader_speed,
-                              follower_num=3,
-                              deceleration=0.001,
-                              distance_max_threshold=80,
-                              distance_min_threshold=1,
-                              velocity_threshold=20,
-                              init_distance=40)
+env = FleetEnv(sim_time_len=100,
+               sim_time_step=0.01,
+               leader_speed=leader_speed,
+               follower_num=3,
+               deceleration=0.001,
+               distance_max_threshold=80,
+               distance_min_threshold=1,
+               velocity_threshold=20,
+               init_distance=40)
+env_test = copy.deepcopy(env)
 env.seed(args.seed)
 env_test.seed(args.seed)
 env.action_space.seed(args.seed)
@@ -75,6 +67,7 @@ agent = SAC(env.observation_space.shape[0],
 
 replay_buffer = ReplayBuffer(args.obs_dim, args.act_dim, max_size=args.replay_size)
 
+
 # %%
 max_ep_len, updates, start_time = env._max_episode_steps, 0, time.time()
 state,  done, ep_ret, ep_len = env.reset(),  False, 0, 0
@@ -86,7 +79,6 @@ for t in range(1, args.num_steps+1):
     next_state, reward, done, _ = env.step(action)
     ep_ret += reward
     ep_len += 1
-
     done = False if ep_len == max_ep_len else done
 
     replay_buffer.add(state, action, reward, next_state, mask=float(not done))
@@ -102,7 +94,7 @@ for t in range(1, args.num_steps+1):
 
     if t % args.steps_per_epoch == 0:
         epoch = t // args.steps_per_epoch
-        test_agent(env_test, agent, logger, n=3)
+        test_agent(env_test, agent, logger, n=3, render=False)
 
         if epoch % args.save_epoch == 0:
             state_dic = {
