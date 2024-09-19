@@ -1,0 +1,5 @@
+seaborn==0.8.1
+pandas
+numpy
+mpi4py
+joblib

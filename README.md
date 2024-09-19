@@ -12,6 +12,11 @@ conda env export | grep -v "^prefix" > environment.yml
 ```bash
 conda env create -f environment.yml
 ```
+### 安装RL复现和绘图
+    cd ./utils && pip install -e .
+### 安装车队仿真环境
+    cd ./fleet_env && pip install -e .
+
 ## 目录结构
 
 ## 训练环境说明
@@ -20,6 +25,12 @@ car1: 领航车
 car2~n: 跟随车
 
 ### 车辆状态
-车辆状态使用简单的线性空间方程实现，同时为输出矩阵$C$添加了阻尼
+车辆状态使用简单的线性空间方程实现，同时为输出矩阵 $C$ 添加了阻尼
+
 $$x_{prime} = A \cdot x + B \cdot u \cdot dt$$
+
 $$y = C \cdot x + D \cdot u$$
+
+
+### 训练结果绘图
+结果保存在

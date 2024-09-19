@@ -1,5 +1,5 @@
 # %%
-import fleet_env
+import fleet_env.fleet_env as fleet_env
 import scipy
 leader_speed = scipy.io.loadmat('predict_meter.mat')['id_v_mat']
 
@@ -21,7 +21,7 @@ while True:
     observation, reward, done, info = env.step(action)
 
     if info['step'] % 100 == 0:
-        env.render()  # 可视化结果
+        env.render()  # 可视化环境
 
     if done:
         env.reset()
