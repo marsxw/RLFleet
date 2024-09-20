@@ -2,7 +2,7 @@ import torch
 import torch.nn.functional as F
 from torch.optim import Adam
 from utils.tool import soft_update, hard_update
-from utils.net import QNetwork, DeterministicPolicy, device
+from utils.net import SingleQNetwork, DeterministicPolicy, device
 
 
 class DDPG(object):
@@ -12,11 +12,11 @@ class DDPG(object):
         self.max_action = action_space.high[0]
 
         # Critic网络，只需要一个
-        self.critic = QNetwork(num_inputs, action_space.shape[0], hidden_size)
+        self.critic = SingleQNetwork(num_inputs, action_space.shape[0], hidden_size)
         self.critic_optim = Adam(self.critic.parameters(), lr=lr)
 
         # 目标Critic网络
-        self.critic_target = QNetwork(num_inputs, action_space.shape[0], hidden_size)
+        self.critic_target = SingleQNetwork(num_inputs, action_space.shape[0], hidden_size)
         hard_update(self.critic_target, self.critic)
 
         # 策略网络
@@ -56,7 +56,7 @@ class DDPG(object):
         self.critic_optim.step()
 
         #### 策略更新 ####
-        policy_loss = -self.critic.Q1(state_batch, self.policy(state_batch)).mean()
+        policy_loss = -self.critic(state_batch, self.policy(state_batch)).mean()
 
         self.policy_optim.zero_grad()
         policy_loss.backward()

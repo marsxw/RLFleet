@@ -28,7 +28,7 @@ parser.add_argument('--batch_size', type=int, default=2048)
 parser.add_argument('--start_steps', type=int, default=1000)
 parser.add_argument('--save_epoch', type=int, default=10)
 parser.add_argument('--steps_per_epoch', type=int, default=10000)
-parser.add_argument('--num_steps', type=int, default=1000000)
+parser.add_argument('--num_steps', type=int, default=5000000)
 # args = parser.parse_args(args=[])  # for jupyter
 args = parser.parse_args()
 

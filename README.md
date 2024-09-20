@@ -12,11 +12,9 @@ conda env export | grep -v "^prefix" > environment.yml
 ```bash
 conda env create -f environment.yml
 ```
-### 安装RL复现和绘图
-    cd ./utils && pip install -e .
-### 安装车队仿真环境
-    cd ./fleet_env && pip install -e .
-
+### 安装RL复现和绘图 车队仿真环境
+    pip install -e .
+    
 ## 目录结构
 
 ## 训练环境说明

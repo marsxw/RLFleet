@@ -1,0 +1,20 @@
+{
+    "act_dim":	1,
+    "batch_size":	2048,
+    "env_name":	"fleet",
+    "exp_name":	"fleet_DDPG",
+    "gamma":	0.99,
+    "hidden_size":	256,
+    "lr":	0.0003,
+    "num_steps":	5000000,
+    "obs_dim":	3,
+    "policy_noise_sigma":	0.2,
+    "replay_size":	1000000,
+    "save_epoch":	10,
+    "seed":	0,
+    "sigma":	0.1,
+    "start_steps":	1000,
+    "steps_per_epoch":	10000,
+    "target_update_interval":	1,
+    "tau":	0.005
+}

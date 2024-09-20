@@ -1,0 +1,18 @@
+{
+    "act_dim":	3,
+    "batch_size":	2048,
+    "env_name":	"fleet",
+    "exp_name":	"fleet_SAC",
+    "gamma":	0.99,
+    "hidden_size":	256,
+    "lr":	0.0003,
+    "num_steps":	1000000,
+    "obs_dim":	7,
+    "replay_size":	1000000,
+    "save_epoch":	10,
+    "seed":	0,
+    "start_steps":	1000,
+    "steps_per_epoch":	10000,
+    "target_update_interval":	1,
+    "tau":	0.005
+}
