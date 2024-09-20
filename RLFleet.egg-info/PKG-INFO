@@ -2,7 +2,7 @@ Metadata-Version: 2.1
 Name: RLFleet
 Version: 0.1
 License-File: LICENSE
-Requires-Dist: seaborn==0.8.1
+Requires-Dist: seaborn
 Requires-Dist: pandas
 Requires-Dist: numpy
 Requires-Dist: mpi4py

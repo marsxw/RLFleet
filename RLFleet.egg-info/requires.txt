@@ -1,4 +1,4 @@
-seaborn==0.8.1
+seaborn
 pandas
 numpy
 mpi4py
