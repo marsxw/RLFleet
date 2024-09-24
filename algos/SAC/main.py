@@ -1,4 +1,5 @@
 # %%
+import sys
 import copy
 import scipy
 from fleet_env.env import FleetEnv
@@ -14,6 +15,7 @@ import os
 script_directory = os.path.dirname(os.path.realpath(__file__))
 os.chdir(script_directory)
 # %%
+args = [arg for arg in sys.argv if not arg.startswith("--f=")]
 parser = argparse.ArgumentParser()
 parser.add_argument('--seed', type=int, default=0)
 parser.add_argument('--env_name', type=str, default='fleet')
@@ -27,14 +29,13 @@ parser.add_argument('--hidden_size', type=int, default=256)
 parser.add_argument('--batch_size', type=int, default=2048)
 parser.add_argument('--start_steps', type=int, default=1000)
 parser.add_argument('--save_epoch', type=int, default=10)
-parser.add_argument('--steps_per_epoch', type=int, default=10000)
-parser.add_argument('--num_steps', type=int, default=5000000)
-# args = parser.parse_args(args=[])  # for jupyter
-args = parser.parse_args()
+parser.add_argument('--steps_per_epoch', type=int, default=1000)
+parser.add_argument('--num_steps', type=int, default=2000000)
+args = parser.parse_args(args[1:])
 
 leader_speed = scipy.io.loadmat('../../predict_meter.mat')['id_v_mat']
 env = FleetEnv(sim_time_len=100,
-               sim_time_step=0.01,
+               sim_time_step=0.1,
                leader_speed=leader_speed,
                follower_num=3,
                deceleration=0.001,

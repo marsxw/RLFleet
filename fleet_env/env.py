@@ -122,7 +122,8 @@ class FleetEnv:
         done_distance_max = (interval > self.distance_max_threshold).any()
         done_distance_min = (interval < self.distance_min_threshold).any()
         done_velocity_delta = (v_delta > self.velocity_threshold).any()
-        done_velocity = (velocities < 0).any()
+        # done_velocity = (velocities < 0).any()
+        done_velocity = 0
         self.done = bool(done_distance_max or done_distance_min or done_velocity_delta or done_velocity)
 
         # if self.done:

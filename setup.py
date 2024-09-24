@@ -13,3 +13,4 @@ setup(
     ],
 )
 # --color orange  green  purple  aqua
+# python utils/plot.py  ./data/fleet  -x TotalEnvInteracts -y AverageEpRet --save-name test.png
