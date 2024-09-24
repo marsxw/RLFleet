@@ -18,6 +18,11 @@ conda env create -f environment.yml
     cd ./fleet_env && pip install -e .
 
 ## 目录结构
+    ./fleet_env 环境
+    ./algos     RL算法
+    ./utils     模型、log、训练结果绘图工具
+    ./data      训练结果
+
 
 ## 训练环境说明
 ![render](./assets/render.png "可选的标题")
